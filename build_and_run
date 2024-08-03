@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -e
+
+BUILD_DIR=build
+EXECUTABLE_NAME=rain
+
+if [ ! -d "$BUILD_DIR" ]; then
+    mkdir $BUILD_DIR
+fi
+
+cd $BUILD_DIR
+
+cmake ..
+
+make
+
+./${EXECUTABLE_NAME}
