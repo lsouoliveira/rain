@@ -13,11 +13,11 @@ void ParticleSystem::Init() {
 
 void ParticleSystem::Draw() {
   BeginShaderMode(m_options.shader);
-  for (auto particle : m_particles) {
-    DrawRectanglePro(Rectangle{particle->position.x, particle->position.y,
-                               particle->size.x, particle->size.y},
-                     Vector2{particle->size.x / 2, particle->size.y / 2},
-                     particle->rotation, particle->color);
+  for (auto &particle : m_particles) {
+    DrawRectanglePro(Rectangle{particle.position.x, particle.position.y,
+                               particle.size.x, particle.size.y},
+                     Vector2{particle.size.x / 2, particle.size.y / 2},
+                     particle.rotation, particle.color);
   }
   EndShaderMode();
 }
@@ -31,25 +31,19 @@ void ParticleSystem::Update(float dt) {
 }
 
 void ParticleSystem::UpdateParticles(float dt) {
-  for (auto particle : m_particles) {
-    particle->position =
-        Vector2Add(particle->position, Vector2Scale(particle->velocity, dt));
+  for (auto &particle : m_particles) {
+    particle.position =
+        Vector2Add(particle.position, Vector2Scale(particle.velocity, dt));
 
-    if (particle->position.y > m_options.size.y) {
+    if (particle.position.y > m_options.size.y) {
       ResetParticle(particle);
     }
   }
 }
 
-void ParticleSystem::Destroy() {
-  for (auto particle : m_particles) {
-    delete particle;
-  }
+void ParticleSystem::Destroy() { m_particles.clear(); }
 
-  m_particles.clear();
-}
-
-Particle *ParticleSystem::CreateParticle() { return new Particle(); }
+Particle ParticleSystem::CreateParticle() { return Particle(); }
 
 bool ParticleSystem::CanSpawnParticle() {
   return m_particles.size() < m_options.max_particles &&
@@ -58,16 +52,18 @@ bool ParticleSystem::CanSpawnParticle() {
 
 void ParticleSystem::SpawnParticle() {
   if (CanSpawnParticle()) {
-    m_particles.push_back(ResetParticle(CreateParticle()));
+    Particle particle = CreateParticle();
+
+    ResetParticle(particle);
+
+    m_particles.push_back(particle);
   }
 }
 
-Particle *ParticleSystem::ResetParticle(Particle *particle) {
-  particle->position = Vector2{RANDOM() * m_options.size.x, 0};
-  particle->velocity = m_options.start_velocity;
-  particle->rotation = m_options.start_rotation;
-  particle->color = m_options.color;
-  particle->size = m_options.start_size;
-
-  return particle;
+void ParticleSystem::ResetParticle(Particle &particle) {
+  particle.position = Vector2{RANDOM() * m_options.size.x, 0};
+  particle.velocity = m_options.start_velocity;
+  particle.rotation = m_options.start_rotation;
+  particle.color = m_options.color;
+  particle.size = m_options.start_size;
 }

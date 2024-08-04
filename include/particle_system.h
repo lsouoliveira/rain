@@ -31,13 +31,13 @@ public:
 
 private:
   ParticleSystemOptions m_options;
-  std::vector<Particle *> m_particles;
+  std::vector<Particle> m_particles;
 
-  Particle *CreateParticle();
+  Particle CreateParticle();
   void UpdateParticles(float dt);
   bool CanSpawnParticle();
   void SpawnParticle();
-  Particle *ResetParticle(Particle *particle);
+  void ResetParticle(Particle &particle);
 };
 
 #endif
