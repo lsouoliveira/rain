@@ -1,7 +1,7 @@
 # Rain
 A rain overlay effect.
 
-https://github.com/user-attachments/assets/794468b3-4cf5-44c2-93e6-82308b0bec74
+https://github.com/user-attachments/assets/ad45cb68-c984-4d59-baf6-9f44f3ff85a8
 
 ## Usage
 
