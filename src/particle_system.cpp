@@ -6,6 +6,8 @@ ParticleSystem::ParticleSystem(ParticleSystemOptions options)
     : m_options(options) {}
 
 void ParticleSystem::Init() {
+  m_particles.reserve(m_options.max_particles);
+
   for (int i = 0; i < m_options.min_particles; i++) {
     SpawnParticle();
   }

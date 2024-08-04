@@ -1,7 +1,9 @@
 #include "application.h"
 #include <raylib.h>
 
-Application::Application(int quit_timeout) : m_quit_timeout(quit_timeout) {}
+Application::Application(int quit_timeout, int min_particles, int max_particles)
+    : m_quit_timeout(quit_timeout), m_min_particles(min_particles),
+      m_max_particles(max_particles) {}
 
 Application::~Application() {}
 
@@ -103,10 +105,11 @@ void Application::Teardown() {
 ParticleSystem *Application::CreateRainParticleSystem(Shader shader) {
   ParticleSystemOptions options{
       .shader = shader,
-      .position = Vector2{0, 0},
-      .size = Vector2{(float)GetScreenWidth(), (float)GetScreenHeight()},
-      .min_particles = 0,
-      .max_particles = 1000,
+      .position = Vector2{-RAIN_OFFSET, 0},
+      .size = Vector2{(float)GetScreenWidth() + RAIN_OFFSET,
+                      (float)GetScreenHeight()},
+      .min_particles = m_min_particles,
+      .max_particles = m_max_particles,
       .start_velocity = Vector2{-250, 1000},
       .start_size = Vector2{1, 40},
       .start_rotation = 10,
