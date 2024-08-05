@@ -16,8 +16,8 @@ void Application::SetupWindow() {
   SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST |
                  FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_MOUSE_PASSTHROUGH |
                  FLAG_BORDERLESS_WINDOWED_MODE);
-  InitWindow(GetMonitorWidth(0), GetMonitorHeight(0), "Rain");
-  SetTargetFPS(60);
+  InitWindow(GetScreenWidth(), GetScreenHeight(), "Rain");
+  SetTargetFPS(144);
 }
 
 void Application::SetupWorld() {
