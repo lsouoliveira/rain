@@ -43,7 +43,7 @@ float sum_waves(
             parameters[i * 4 + 3],
             x,
             t
-        );
+        ) + parameters[i * 4];
     }
 
     return y;
