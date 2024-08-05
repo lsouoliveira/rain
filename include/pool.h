@@ -5,6 +5,7 @@
 #include <math.h>
 #include <particle.h>
 #include <stdlib.h>
+#include <vector>
 
 struct PoolOptions {
   Vector2 position;
@@ -30,6 +31,9 @@ public:
   void SetWaterColor(Color color);
   void SetFoamColor(Color color);
   void SetFoamWidth(float width);
+  void BindShaderValue(const char* name, void* value, int uniformType);
+  std::vector<float> normalized_foam_color();
+  std::vector<float> normalized_water_color();
 
 private:
   Vector2 m_position;
@@ -42,6 +46,10 @@ private:
   float m_foam_width;
   float m_max_height = 0.0f;
   float m_total_time = 0.0f;
+
+  std::vector<float> NormalizeColor(Color color) {
+    return {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f};
+  }
 };
 
 #endif
