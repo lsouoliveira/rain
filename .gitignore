@@ -1,2 +1,7 @@
 build
 .cache
+CMakePresets.json
+CMakeCache.txt
+cmake.check_cache
+CMakeConfigureLog.yaml
+CMakeSystem.cmake

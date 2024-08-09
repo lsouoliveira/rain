@@ -1,5 +1,8 @@
 #include "application.h"
+#include "particle_system.h"
 #include <raylib.h>
+
+namespace Rain {
 
 Application::Application(int quit_timeout, int min_particles, int max_particles)
     : m_quit_timeout(quit_timeout), m_min_particles(min_particles),
@@ -14,9 +17,9 @@ void Application::Init() {
 
 void Application::SetupWindow() {
   SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST |
-                 FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_MOUSE_PASSTHROUGH |
-                 FLAG_BORDERLESS_WINDOWED_MODE);
+                 FLAG_WINDOW_MOUSE_PASSTHROUGH | FLAG_BORDERLESS_WINDOWED_MODE);
   InitWindow(GetScreenWidth(), GetScreenHeight(), "Rain");
+  SetWindowState(FLAG_WINDOW_UNDECORATED);
   SetTargetFPS(144);
 }
 
@@ -53,8 +56,8 @@ void Application::Update() {
     m_should_close = true;
   }
 
-  m_rain->Update(dt);
-  m_pool->Update(dt);
+  m_rain->OnUpdate(dt);
+  m_pool->OnUpdate(dt);
 }
 
 void Application::Draw() {
@@ -66,7 +69,7 @@ void Application::DrawBackground() {
   BeginTextureMode(m_render_texture);
   ClearBackground(BLANK);
 
-  m_rain->Draw();
+  m_rain->OnDraw();
 
   EndTextureMode();
 }
@@ -83,18 +86,17 @@ void Application::DrawForeground() {
   BeginBlendMode(BLEND_SUBTRACT_COLORS);
   m_pool->SetFoamColor(BLANK);
   m_pool->SetWaterColor(BLANK);
-  m_pool->Draw();
+  m_pool->OnDraw();
   EndBlendMode();
 
   m_pool->SetFoamColor(FOAM_COLOR);
   m_pool->SetWaterColor(WATER_COLOR);
-  m_pool->Draw();
+  m_pool->OnDraw();
 
   EndDrawing();
 }
 
 void Application::Teardown() {
-  m_rain->Destroy();
   UnloadShader(m_rain_shader);
   UnloadShader(m_pool_shader);
   UnloadTexture(m_default_texture);
@@ -103,26 +105,27 @@ void Application::Teardown() {
 }
 
 ParticleSystem *Application::CreateRainParticleSystem(Shader shader) {
-  ParticleSystemOptions options{
-      .shader = shader,
-      .position = Vector2{-RAIN_OFFSET, 0},
-      .size = Vector2{(float)GetScreenWidth() + RAIN_OFFSET,
-                      (float)GetScreenHeight()},
-      .min_particles = m_min_particles,
-      .max_particles = m_max_particles,
-      .start_velocity = Vector2{-250, 1000},
-      .start_size = Vector2{1, 40},
-      .start_rotation = 10,
-      .spawn_rate = 0.5,
-      .color = RAIN_COLOR};
+  ParticleSystem *particle_system = nullptr;
+  ParticleSystemOptions options{.shader = shader,
+                                .min_particles = m_min_particles,
+                                .max_particles = m_max_particles,
+                                .start_velocity = Vector2{-250, 1000},
+                                .start_size = Vector2{1, 40},
+                                .start_rotation = 10,
+                                .spawn_rate = 0.5,
+                                .color = RAIN_COLOR};
 
-  return new ParticleSystem(options);
+  particle_system = new ParticleSystem(options);
+  particle_system->transform.position = Vector2{-RAIN_OFFSET, 0};
+  particle_system->transform.size =
+      Vector2{(float)GetScreenWidth() + RAIN_OFFSET, (float)GetScreenHeight()};
+
+  return particle_system;
 }
 
 Pool *Application::CreatePool(Shader shader, Texture texture) {
-  PoolOptions options{.position = Vector2{0, (float)GetScreenHeight()},
-                      .size = Vector2{(float)GetScreenWidth(), 0},
-                      .height_growth_rate = WATER_HEIGHT_GROWTH_RATE,
+  Pool *pool = nullptr;
+  PoolOptions options{.height_growth_rate = WATER_HEIGHT_GROWTH_RATE,
                       .shader = shader,
                       .texture = texture,
                       .foam_color = FOAM_COLOR,
@@ -130,5 +133,10 @@ Pool *Application::CreatePool(Shader shader, Texture texture) {
                       .foam_width = FOAM_WIDTH,
                       .max_height = (float)GetScreenHeight()};
 
-  return new Pool(options);
+  pool = new Pool(options);
+  pool->transform.position = Vector2{0, (float)GetScreenHeight()};
+  pool->transform.size = Vector2{(float)GetScreenWidth(), 0};
+
+  return pool;
 }
+}; // namespace Rain

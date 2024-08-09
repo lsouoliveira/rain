@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     max_particles = std::stoi(argv[3]);
   }
 
-  Application app(quit_timeout, min_particles, max_particles);
+  Rain::Application app(quit_timeout, min_particles, max_particles);
 
   app.Init();
   app.Run();

@@ -1,15 +1,16 @@
-#ifndef POOL_H
-#define POOL_H
+#pragma once
 
 #include <core.h>
+#include <entity.h>
 #include <math.h>
 #include <particle.h>
+
 #include <stdlib.h>
 #include <vector>
 
+namespace Rain {
+
 struct PoolOptions {
-  Vector2 position;
-  Vector2 size;
   float height_growth_rate;
   Shader shader;
   Texture texture;
@@ -19,25 +20,25 @@ struct PoolOptions {
   float max_height;
 };
 
-class Pool {
+class Pool : public Entity {
 public:
   Pool();
   Pool(PoolOptions options);
 
   void Init();
-  void Draw();
-  void Update(float dt);
-  void Destroy();
+  void OnDraw();
+  void OnUpdate(float dt);
+
   void SetWaterColor(Color color);
   void SetFoamColor(Color color);
   void SetFoamWidth(float width);
-  void BindShaderValue(const char* name, void* value, int uniformType);
+
+  void BindShaderValue(const char *name, void *value, int uniformType);
+
   std::vector<float> normalized_foam_color();
   std::vector<float> normalized_water_color();
 
 private:
-  Vector2 m_position;
-  Vector2 m_size;
   float m_height_growth_rate;
   Shader m_shader;
   Texture m_texture;
@@ -48,8 +49,9 @@ private:
   float m_total_time = 0.0f;
 
   std::vector<float> NormalizeColor(Color color) {
-    return {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f};
+    return {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
+            color.a / 255.0f};
   }
 };
 
-#endif
+}; // namespace Rain

@@ -1,10 +1,12 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#pragma once
 
 #include "core.h"
 #include "particle_system.h"
 #include "pool.h"
+
 #include <memory>
+
+namespace Rain {
 
 class Application {
   Color RAIN_COLOR = Color{15, 94, 156, 200};
@@ -45,4 +47,4 @@ private:
   Pool *CreatePool(Shader shader, Texture texture);
 };
 
-#endif
+}; // namespace Rain

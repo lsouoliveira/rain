@@ -27,6 +27,9 @@ add_executable(
   src/application.cpp
   src/particle_system.cpp
   src/pool.cpp
+  src/interactive_pool.cpp
+
+  include/entity.h
 )
 
 target_link_libraries(${PROJECT_NAME} raylib)

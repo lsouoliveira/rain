@@ -1,10 +1,10 @@
 #include <pool.h>
-#include <raylib.h>
+
+namespace Rain {
 
 Pool::Pool() {}
 Pool::Pool(PoolOptions options)
-    : m_position(options.position), m_size(options.size),
-      m_height_growth_rate(options.height_growth_rate),
+    : m_height_growth_rate(options.height_growth_rate),
       m_shader(options.shader), m_texture(options.texture),
       m_foam_color(options.foam_color), m_water_color(options.water_color),
       m_foam_width(options.foam_width), m_max_height(options.max_height) {}
@@ -15,39 +15,34 @@ void Pool::Init() {
   SetFoamWidth(m_foam_width);
 }
 
-void Pool::Draw() {
+void Pool::OnDraw() {
   BeginShaderMode(m_shader);
 
   BindShaderValue("time", &m_total_time, SHADER_UNIFORM_FLOAT);
   BindShaderValue("waterColor", normalized_water_color().data(),
                   SHADER_UNIFORM_VEC4);
   BindShaderValue("foamColor", normalized_foam_color().data(),
-      SHADER_UNIFORM_VEC4);
+                  SHADER_UNIFORM_VEC4);
   BindShaderValue("foamWidth", &m_foam_width, SHADER_UNIFORM_FLOAT);
 
   DrawTexturePro(m_texture,
                  {0.0, 0.0, (float)m_texture.width, (float)m_texture.height},
-                 {m_position.x, m_position.y, m_size.x, m_size.y}, {0.0, 0.0},
-                 0.0f, WHITE);
+                 {transform.position.x, transform.position.y, transform.size.x,
+                  transform.size.y},
+                 {0.0, 0.0}, 0.0f, WHITE);
   EndShaderMode();
 }
 
-void Pool::Update(float dt) {
+void Pool::OnUpdate(float dt) {
   m_total_time += dt;
 
-  m_size.y += m_height_growth_rate * GetFrameTime();
-  m_position.y = (float)GetScreenHeight() - m_size.y;
+  transform.size.y += m_height_growth_rate * GetFrameTime();
+  transform.position.y = (float)GetScreenHeight() - transform.size.y;
 }
 
-void Pool::Destroy() {}
+void Pool::SetWaterColor(Color color) { m_water_color = color; }
 
-void Pool::SetWaterColor(Color color) {
-  m_water_color = color;
-}
-
-void Pool::SetFoamColor(Color color) {
-  m_foam_color = color;
-}
+void Pool::SetFoamColor(Color color) { m_foam_color = color; }
 
 void Pool::BindShaderValue(const char *name, void *value, int uniformType) {
   int loc = GetShaderLocation(m_shader, name);
@@ -62,6 +57,6 @@ std::vector<float> Pool::normalized_water_color() {
   return NormalizeColor(m_water_color);
 }
 
-void Pool::SetFoamWidth(float width) {
-  m_foam_width = width;
-}
+void Pool::SetFoamWidth(float width) { m_foam_width = width; }
+
+}; // namespace Rain

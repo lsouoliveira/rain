@@ -1,5 +1,7 @@
 #include <particle_system.h>
 
+namespace Rain {
+
 ParticleSystem::ParticleSystem() {}
 
 ParticleSystem::ParticleSystem(ParticleSystemOptions options)
@@ -13,7 +15,7 @@ void ParticleSystem::Init() {
   }
 }
 
-void ParticleSystem::Draw() {
+void ParticleSystem::OnDraw() {
   BeginShaderMode(m_options.shader);
   for (auto &particle : m_particles) {
     DrawRectanglePro(Rectangle{particle.position.x, particle.position.y,
@@ -24,7 +26,7 @@ void ParticleSystem::Draw() {
   EndShaderMode();
 }
 
-void ParticleSystem::Update(float dt) {
+void ParticleSystem::OnUpdate(float dt) {
   UpdateParticles(dt);
 
   if (CanSpawnParticle()) {
@@ -37,13 +39,11 @@ void ParticleSystem::UpdateParticles(float dt) {
     particle.position =
         Vector2Add(particle.position, Vector2Scale(particle.velocity, dt));
 
-    if (particle.position.y > m_options.size.y) {
+    if (particle.position.y > transform.size.y) {
       ResetParticle(particle);
     }
   }
 }
-
-void ParticleSystem::Destroy() { m_particles.clear(); }
 
 Particle ParticleSystem::CreateParticle() { return Particle(); }
 
@@ -63,9 +63,11 @@ void ParticleSystem::SpawnParticle() {
 }
 
 void ParticleSystem::ResetParticle(Particle &particle) {
-  particle.position = Vector2{RANDOM() * m_options.size.x, 0};
+  particle.position = Vector2{RANDOM() * transform.size.x, 0};
   particle.velocity = m_options.start_velocity;
   particle.rotation = m_options.start_rotation;
   particle.color = m_options.color;
   particle.size = m_options.start_size;
 }
+
+}; // namespace Rain

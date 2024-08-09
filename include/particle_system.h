@@ -1,15 +1,15 @@
-#ifndef PARTICLE_SYSTEM_H
-#define PARTICLE_SYSTEM_H
+#pragma once
 
 #include <core.h>
+#include <entity.h>
 #include <particle.h>
 #include <stdlib.h>
 #include <vector>
 
+namespace Rain {
+
 struct ParticleSystemOptions {
   Shader shader;
-  Vector2 position;
-  Vector2 size;
   int min_particles;
   int max_particles;
   Vector2 start_velocity;
@@ -19,15 +19,14 @@ struct ParticleSystemOptions {
   Color color;
 };
 
-class ParticleSystem {
+class ParticleSystem : public Entity {
 public:
   ParticleSystem();
   ParticleSystem(ParticleSystemOptions options);
 
   void Init();
-  void Draw();
-  void Update(float dt);
-  void Destroy();
+  void OnDraw();
+  void OnUpdate(float dt);
 
 private:
   ParticleSystemOptions m_options;
@@ -40,4 +39,4 @@ private:
   void ResetParticle(Particle &particle);
 };
 
-#endif
+}; // namespace Rain
