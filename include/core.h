@@ -6,6 +6,8 @@
 #include <raymath.h>
 #include <rlgl.h>
 
+#define DEBUG false
+
 #if defined(PLATFORM_DESKTOP)
 #define GLSL_VERSION 330
 #else // PLATFORM_ANDROID, PLATFORM_WEB

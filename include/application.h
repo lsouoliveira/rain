@@ -11,10 +11,10 @@ namespace Rain {
 
 class Application {
   Color RAIN_COLOR = Color{15, 94, 156, 200};
-  Color WATER_COLOR = Color{15, 94, 156, 50};
-  Color FOAM_COLOR = Color{15, 94, 156, 60};
+  Color WATER_COLOR = Color{5, 48, 82, 25};
+  Color FOAM_COLOR = Color{5, 48, 82, 60};
   float FOAM_WIDTH = 0.01f;
-  float WATER_HEIGHT_GROWTH_RATE = 10.0f;
+  float WATER_HEIGHT_GROWTH_RATE = 25.0f;
   float RAIN_OFFSET = 500.0f;
 
 public:
@@ -47,7 +47,7 @@ private:
   void SetupWorld();
   ParticleSystem *CreateRainParticleSystem(Shader shader);
   Pool *CreatePool(Shader shader, Texture texture);
-  InteractivePool* CreateInteractivePool(Shader shader, Texture texture);
+  InteractivePool *CreateInteractivePool(Shader shader, Texture texture);
 };
 
 }; // namespace Rain

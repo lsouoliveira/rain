@@ -25,6 +25,7 @@ struct WavePoint {
   Vector2 position;
   Vector2 velocity;
   Vector2 offset;
+  Vector2 final_position;
 };
 
 struct WaveRenderData {
@@ -34,7 +35,15 @@ struct WaveRenderData {
 
 class InteractivePool : public Entity {
 public:
-  const static int MAX_BACKGROUND_WAVES = 1;
+  const static int MAX_BACKGROUND_WAVES = 3;
+  const static int MIN_POINTS_UNDER_MOUSE = 0;
+  constexpr static float INFLUENCE_RADIUS = 200.0;
+  constexpr static float MAX_INFLUENCE_DIST = 300.0;
+  constexpr static float SPRING_CONSTANT = 4;
+  constexpr static float SPRING_BASELINE_CONSTANT = 2;
+  constexpr static float SPRING_DAMPING_CONSTANT = 0.001;
+  constexpr static float INFLUENCE_FORCE = 80;
+  constexpr static float TIME_SCALE = 1;
 
   InteractivePool();
   InteractivePool(const InteractivePoolOptions &options);
@@ -55,6 +64,8 @@ public:
 
   void UpdateWavePoints(float dt);
 
+  Vector2 GetCenterPoint();
+
   void BindShaderValue(const char *name, void *value, int uniformType);
 
 private:
@@ -68,10 +79,20 @@ private:
   float m_max_height;
   float m_total_time = 0;
   std::vector<WavePoint> m_wave_points;
-  float m_waves_parameters[MAX_BACKGROUND_WAVES][4] = {{50, 100, 1, 10.0}};
+  float m_waves_parameters[MAX_BACKGROUND_WAVES][4] = {
+      {5, 400, 1, 10.0}, {4, 500, 1, 10.0}, {2, 600, 1, 10.0}};
 
   void DrawWave();
   void DrawDebugWavePoints();
+  void DrawPoints(const std::vector<Vector2> &points, float radius,
+                  Color color);
+
+  int CountPointsUnderInfluence();
+
+  bool IsPointUnderInfluence(const WavePoint &wave_point);
+
+  void ApplyWaveInfluenceForce(WavePoint &wave_point, float dt);
+
   WaveRenderData GenerateWaveRenderData();
 };
 }; // namespace Rain

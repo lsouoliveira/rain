@@ -1,5 +1,6 @@
 #include "application.h"
 #include "interactive_pool.h"
+#include "raylib.h"
 
 namespace Rain {
 
@@ -16,7 +17,7 @@ void Application::Init() {
 
 void Application::SetupWindow() {
   SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_TOPMOST |
-                 FLAG_WINDOW_MOUSE_PASSTHROUGH | FLAG_BORDERLESS_WINDOWED_MODE);
+                 FLAG_BORDERLESS_WINDOWED_MODE);
   InitWindow(GetScreenWidth(), GetScreenHeight(), "Rain");
   SetWindowState(FLAG_WINDOW_UNDECORATED);
   SetTargetFPS(144);
@@ -70,14 +71,13 @@ void Application::DrawForeground() {
   BeginDrawing();
   ClearBackground(BLANK);
 
-  DrawTextureRec(m_render_texture.texture,
-                 {0, 0, (float)m_render_texture.texture.width,
-                  (float)-m_render_texture.texture.height},
-                 {0, 0}, WHITE);
+  rlDisableColorBlend();
+  m_rain->OnDraw();
 
   m_interactive_pool->SetFoamColor(FOAM_COLOR);
   m_interactive_pool->SetWaterColor(WATER_COLOR);
   m_interactive_pool->OnDraw();
+  rlEnableColorBlend();
 
   EndDrawing();
 }
@@ -129,7 +129,7 @@ Pool *Application::CreatePool(Shader shader, Texture texture) {
 InteractivePool *Application::CreateInteractivePool(Shader shader,
                                                     Texture texture) {
   InteractivePool *interactive_pool = nullptr;
-  InteractivePoolOptions options{.resolution = 20,
+  InteractivePoolOptions options{.resolution = 300,
                                  .height_growth_rate = WATER_HEIGHT_GROWTH_RATE,
                                  .shader = shader,
                                  .texture = texture,
@@ -139,8 +139,7 @@ InteractivePool *Application::CreateInteractivePool(Shader shader,
                                  .max_height = (float)GetScreenHeight()};
 
   interactive_pool = new InteractivePool(options);
-  interactive_pool->transform.position =
-      Vector2{0, (float)GetScreenHeight() - 500};
+  interactive_pool->transform.position = Vector2{0, (float)GetScreenHeight()};
   interactive_pool->transform.size = Vector2{(float)GetScreenWidth(), 500};
 
   return interactive_pool;

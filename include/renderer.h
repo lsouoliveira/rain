@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <earcut.hpp>
 #include <iostream>
@@ -54,9 +55,11 @@ static void DrawPolygon(Texture2D texture, Vector2 center, Vector2 *points,
 
   rlSetTexture(texture.id);
 
-  rlBegin(RL_LINES);
+  rlBegin(RL_TRIANGLES);
 
   rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+  std::reverse(indices.begin(), indices.end());
 
   for (int i = 0; i < indices.size(); i += 3) {
     rlTexCoord2f(texcoords[indices[i]].x, texcoords[indices[i]].y);
