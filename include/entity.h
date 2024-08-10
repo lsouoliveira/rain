@@ -7,7 +7,7 @@ namespace Rain {
 struct Transform {
   Vector2 position;
   Vector2 size;
-  Vector2 rotation;
+  float rotation = 0.0f;
 };
 
 class Entity {

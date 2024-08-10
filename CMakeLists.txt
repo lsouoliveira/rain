@@ -28,11 +28,15 @@ add_executable(
   src/particle_system.cpp
   src/pool.cpp
   src/interactive_pool.cpp
+  src/rigidbody_2d.cpp
+  src/duck.cpp
 
   include/entity.h
   include/utils.h
   include/particle.h
   include/renderer.h
+  include/rigidbody_2d.h
+
   include/earcut.hpp
 )
 

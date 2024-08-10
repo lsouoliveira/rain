@@ -4,6 +4,7 @@
 #include <cmath>
 #include <core.h>
 #include <entity.h>
+#include <limits.h>
 #include <particle.h>
 #include <stdlib.h>
 #include <vector>
@@ -42,8 +43,7 @@ public:
   constexpr static float SPRING_CONSTANT = 4;
   constexpr static float SPRING_BASELINE_CONSTANT = 2;
   constexpr static float SPRING_DAMPING_CONSTANT = 0.001;
-  constexpr static float INFLUENCE_FORCE = 80;
-  constexpr static float TIME_SCALE = 1;
+  constexpr static float INFLUENCE_FORCE = 150;
 
   InteractivePool();
   InteractivePool(const InteractivePoolOptions &options);
@@ -61,6 +61,9 @@ public:
   float GetBackgroundWaveHeightAt(const float &x);
   float ComputeWave(float x, float t, float amplitude, float wave_length,
                     float frequency, float phase);
+  float SampleYFromRange(float min_x, float max_x);
+
+  Vector2 GetClosestPointTo(const Vector2 &point);
 
   void UpdateWavePoints(float dt);
 

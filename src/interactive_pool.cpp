@@ -37,12 +37,12 @@ void InteractivePool::OnDraw() {
 }
 
 void InteractivePool::OnUpdate(float dt) {
-  m_total_time += TIME_SCALE * dt;
+  m_total_time += dt;
 
   transform.size.y += m_height_growth_rate * dt;
   transform.position.y -= m_height_growth_rate * dt;
 
-  UpdateWavePoints(TIME_SCALE * dt);
+  UpdateWavePoints(dt);
 }
 
 void InteractivePool::SetWaterColor(Color color) { m_water_color = color; }
@@ -79,6 +79,47 @@ float InteractivePool::ComputeWave(float x, float t, float amplitude,
   k = 2 * PI / wave_length;
 
   return amplitude * sin(k * x - frequency * t + phase) + amplitude;
+}
+
+float InteractivePool::SampleYFromRange(float min_x, float max_x) {
+  float sample_y;
+  int num_points;
+
+  sample_y = 0;
+  num_points = 0;
+
+  for (int i = 0; i < m_wave_points.size(); i++) {
+    if (GetCenterPoint().x + m_wave_points[i].final_position.x >= min_x &&
+        GetCenterPoint().x + m_wave_points[i].final_position.x <= max_x) {
+      sample_y += m_wave_points[i].final_position.y;
+      num_points++;
+    }
+  }
+
+  if (num_points == 0) {
+    return 0;
+  }
+
+  return GetCenterPoint().y + sample_y / num_points;
+}
+
+Vector2 InteractivePool::GetClosestPointTo(const Vector2 &point) {
+  Vector2 closest_point;
+  float min_dist = std::numeric_limits<float>::max();
+  float dist;
+
+  for (const WavePoint &wave_point : m_wave_points) {
+    dist = Vector2Distance(
+        Vector2Add(GetCenterPoint(), wave_point.final_position), point);
+
+    if (dist < min_dist) {
+      min_dist = dist;
+      closest_point = wave_point.final_position;
+    }
+  }
+
+  return Vector2{GetCenterPoint().x + closest_point.x,
+                 GetCenterPoint().y + closest_point.y};
 }
 
 void InteractivePool::UpdateWavePoints(float dt) {

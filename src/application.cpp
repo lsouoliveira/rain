@@ -1,6 +1,8 @@
 #include "application.h"
 #include "interactive_pool.h"
 #include "raylib.h"
+#include "raymath.h"
+#include "rigidbody_2d.h"
 
 namespace Rain {
 
@@ -27,7 +29,8 @@ void Application::SetupWorld() {
   m_rain_shader = LoadShader(0, "resources/shaders/particle.fs");
   m_pool_shader = LoadShader(0, "resources/shaders/water.fs");
   m_default_texture = LoadTexture("resources/textures/default.png");
-  m_render_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+  m_duck_texture = LoadTexture("resources/textures/duck.png");
+  m_foreground = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
   this->m_rain =
       std::unique_ptr<ParticleSystem>(CreateRainParticleSystem(m_rain_shader));
@@ -38,9 +41,12 @@ void Application::SetupWorld() {
   this->m_interactive_pool = std::unique_ptr<InteractivePool>(
       CreateInteractivePool(m_pool_shader, m_default_texture));
 
+  this->m_duck = std::unique_ptr<Duck>(CreateDuck(m_duck_texture));
+
   this->m_rain->Init();
   this->m_pool->Init();
   this->m_interactive_pool->Init();
+  this->m_duck->Init();
 }
 
 void Application::Run() {
@@ -63,6 +69,18 @@ void Application::Update() {
 
   m_rain->OnUpdate(dt);
   m_interactive_pool->OnUpdate(dt);
+
+  for (auto &duck : m_ducks) {
+    duck->OnUpdate(dt);
+  }
+
+  if (IsKeyPressed(KEY_SPACE)) {
+    Duck *duck = CreateDuck(m_duck_texture);
+    duck->transform.position = Vector2Subtract(
+        GetMousePosition(), Vector2Scale(duck->transform.size, 0.5));
+
+    m_ducks.push_back(std::unique_ptr<Duck>(duck));
+  }
 }
 
 void Application::Draw() { DrawForeground(); }
@@ -71,13 +89,27 @@ void Application::DrawForeground() {
   BeginDrawing();
   ClearBackground(BLANK);
 
+  BeginTextureMode(m_foreground);
+  ClearBackground(BLANK);
   rlDisableColorBlend();
+
   m_rain->OnDraw();
 
   m_interactive_pool->SetFoamColor(FOAM_COLOR);
   m_interactive_pool->SetWaterColor(WATER_COLOR);
   m_interactive_pool->OnDraw();
+
   rlEnableColorBlend();
+  EndTextureMode();
+
+  for (auto &duck : m_ducks) {
+    duck->OnDraw();
+  }
+
+  DrawTextureRec(m_foreground.texture,
+                 {0, 0, (float)m_foreground.texture.width,
+                  (float)-m_foreground.texture.height},
+                 {0, 0}, WHITE);
 
   EndDrawing();
 }
@@ -86,7 +118,8 @@ void Application::Teardown() {
   UnloadShader(m_rain_shader);
   UnloadShader(m_pool_shader);
   UnloadTexture(m_default_texture);
-  UnloadRenderTexture(m_render_texture);
+  UnloadTexture(m_duck_texture);
+  UnloadRenderTexture(m_foreground);
   CloseWindow();
 }
 
@@ -139,10 +172,25 @@ InteractivePool *Application::CreateInteractivePool(Shader shader,
                                  .max_height = (float)GetScreenHeight()};
 
   interactive_pool = new InteractivePool(options);
-  interactive_pool->transform.position = Vector2{0, (float)GetScreenHeight()};
-  interactive_pool->transform.size = Vector2{(float)GetScreenWidth(), 500};
+  interactive_pool->transform.position =
+      Vector2{-500, (float)GetScreenHeight()};
+  interactive_pool->transform.size =
+      Vector2{(float)GetScreenWidth() + 1000, 500};
 
   return interactive_pool;
 }
 
+Duck *Application::CreateDuck(Texture texture) {
+  Duck *duck = new Duck(texture, m_interactive_pool.get());
+  Rigidbody2d *rigidbody = new Rigidbody2d(duck);
+
+  rigidbody->SetMass(1.25);
+
+  duck->SetRigidbody2d(rigidbody);
+  duck->transform.position = Vector2{(float)GetScreenWidth() / 2 - 100,
+                                     (float)GetScreenHeight() / 2 - 100};
+  duck->transform.size = Vector2{200, 200};
+
+  return duck;
+}
 }; // namespace Rain
