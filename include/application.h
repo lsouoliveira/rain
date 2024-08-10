@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core.h"
+#include "interactive_pool.h"
 #include "particle_system.h"
 #include "pool.h"
 
@@ -26,6 +27,7 @@ public:
 private:
   std::unique_ptr<ParticleSystem> m_rain;
   std::unique_ptr<Pool> m_pool;
+  std::unique_ptr<InteractivePool> m_interactive_pool;
   Shader m_rain_shader;
   Shader m_pool_shader;
   Texture m_default_texture;
@@ -45,6 +47,7 @@ private:
   void SetupWorld();
   ParticleSystem *CreateRainParticleSystem(Shader shader);
   Pool *CreatePool(Shader shader, Texture texture);
+  InteractivePool* CreateInteractivePool(Shader shader, Texture texture);
 };
 
 }; // namespace Rain

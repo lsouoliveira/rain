@@ -30,6 +30,10 @@ add_executable(
   src/interactive_pool.cpp
 
   include/entity.h
+  include/utils.h
+  include/particle.h
+  include/renderer.h
+  include/earcut.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} raylib)

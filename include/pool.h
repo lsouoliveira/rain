@@ -47,11 +47,6 @@ private:
   float m_foam_width;
   float m_max_height = 0.0f;
   float m_total_time = 0.0f;
-
-  std::vector<float> NormalizeColor(Color color) {
-    return {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f,
-            color.a / 255.0f};
-  }
 };
 
 }; // namespace Rain

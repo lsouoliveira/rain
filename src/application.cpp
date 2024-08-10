@@ -1,6 +1,5 @@
 #include "application.h"
-#include "particle_system.h"
-#include <raylib.h>
+#include "interactive_pool.h"
 
 namespace Rain {
 
@@ -25,17 +24,22 @@ void Application::SetupWindow() {
 
 void Application::SetupWorld() {
   m_rain_shader = LoadShader(0, "resources/shaders/particle.fs");
-  m_pool_shader = LoadShader(0, "resources/shaders/pool.fs");
+  m_pool_shader = LoadShader(0, "resources/shaders/water.fs");
   m_default_texture = LoadTexture("resources/textures/default.png");
   m_render_texture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
   this->m_rain =
       std::unique_ptr<ParticleSystem>(CreateRainParticleSystem(m_rain_shader));
-  this->m_rain->Init();
 
   this->m_pool =
       std::unique_ptr<Pool>(CreatePool(m_pool_shader, m_default_texture));
+
+  this->m_interactive_pool = std::unique_ptr<InteractivePool>(
+      CreateInteractivePool(m_pool_shader, m_default_texture));
+
+  this->m_rain->Init();
   this->m_pool->Init();
+  this->m_interactive_pool->Init();
 }
 
 void Application::Run() {
@@ -57,22 +61,10 @@ void Application::Update() {
   }
 
   m_rain->OnUpdate(dt);
-  m_pool->OnUpdate(dt);
+  m_interactive_pool->OnUpdate(dt);
 }
 
-void Application::Draw() {
-  DrawBackground();
-  DrawForeground();
-}
-
-void Application::DrawBackground() {
-  BeginTextureMode(m_render_texture);
-  ClearBackground(BLANK);
-
-  m_rain->OnDraw();
-
-  EndTextureMode();
-}
+void Application::Draw() { DrawForeground(); }
 
 void Application::DrawForeground() {
   BeginDrawing();
@@ -83,15 +75,9 @@ void Application::DrawForeground() {
                   (float)-m_render_texture.texture.height},
                  {0, 0}, WHITE);
 
-  BeginBlendMode(BLEND_SUBTRACT_COLORS);
-  m_pool->SetFoamColor(BLANK);
-  m_pool->SetWaterColor(BLANK);
-  m_pool->OnDraw();
-  EndBlendMode();
-
-  m_pool->SetFoamColor(FOAM_COLOR);
-  m_pool->SetWaterColor(WATER_COLOR);
-  m_pool->OnDraw();
+  m_interactive_pool->SetFoamColor(FOAM_COLOR);
+  m_interactive_pool->SetWaterColor(WATER_COLOR);
+  m_interactive_pool->OnDraw();
 
   EndDrawing();
 }
@@ -139,4 +125,25 @@ Pool *Application::CreatePool(Shader shader, Texture texture) {
 
   return pool;
 }
+
+InteractivePool *Application::CreateInteractivePool(Shader shader,
+                                                    Texture texture) {
+  InteractivePool *interactive_pool = nullptr;
+  InteractivePoolOptions options{.resolution = 20,
+                                 .height_growth_rate = WATER_HEIGHT_GROWTH_RATE,
+                                 .shader = shader,
+                                 .texture = texture,
+                                 .foam_color = FOAM_COLOR,
+                                 .water_color = WATER_COLOR,
+                                 .foam_width = FOAM_WIDTH,
+                                 .max_height = (float)GetScreenHeight()};
+
+  interactive_pool = new InteractivePool(options);
+  interactive_pool->transform.position =
+      Vector2{0, (float)GetScreenHeight() - 500};
+  interactive_pool->transform.size = Vector2{(float)GetScreenWidth(), 500};
+
+  return interactive_pool;
+}
+
 }; // namespace Rain
