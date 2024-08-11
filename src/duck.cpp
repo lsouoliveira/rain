@@ -39,6 +39,7 @@ void Duck::OnUpdate(float dt) {
 
     m_rigidbody->AddForce({0, -fb});
     m_rigidbody->AddForce({0, m_rigidbody->velocity().y * -0.5f});
+    m_rigidbody->AddForce({10, 0});
   } else {
     m_is_underwater = false;
   }
