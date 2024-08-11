@@ -24,7 +24,6 @@ void Duck::OnUpdate(float dt) {
   if (transform.position.y + transform.size.y > wave_y) {
     if (!m_is_underwater) {
       m_is_underwater = true;
-      m_rigidbody->SetVelocity({0, 0});
     }
 
     float submerged_height = std::min(
@@ -38,7 +37,7 @@ void Duck::OnUpdate(float dt) {
     float fb = submerssion * GRAVITY * 5;
 
     m_rigidbody->AddForce({0, -fb});
-    m_rigidbody->AddForce({0, m_rigidbody->velocity().y * -0.5f});
+    m_rigidbody->AddForce({0, m_rigidbody->velocity().y * -2});
     m_rigidbody->AddForce({10, 0});
   } else {
     m_is_underwater = false;
