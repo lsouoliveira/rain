@@ -7,6 +7,7 @@
 #include <rlgl.h>
 
 #define DEBUG false
+#define GRAVITY 980
 
 #if defined(PLATFORM_DESKTOP)
 #define GLSL_VERSION 330

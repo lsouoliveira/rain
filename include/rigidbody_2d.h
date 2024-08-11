@@ -18,6 +18,7 @@ public:
   float mass() { return m_mass; }
 
   void SetVelocity(Vector2 velocity) { m_velocity = velocity; }
+  Vector2 velocity() { return m_velocity; }
 
 private:
   Entity *m_parent;

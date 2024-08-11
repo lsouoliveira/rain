@@ -16,7 +16,7 @@ void Duck::OnDraw() {
 void Duck::OnUpdate(float dt) {
   m_rigidbody->OnUpdate(dt);
 
-  m_rigidbody->AddForce({0, 98 * m_rigidbody->mass()});
+  m_rigidbody->AddForce({0, GRAVITY * m_rigidbody->mass()});
 
   float wave_y = m_interactive_pool->SampleYFromRange(
       transform.position.x, transform.position.x + transform.size.x);
@@ -35,9 +35,10 @@ void Duck::OnUpdate(float dt) {
     }
 
     float submerssion = submerged_height / transform.size.y;
-    float fb = submerssion * 98 * 5;
+    float fb = submerssion * GRAVITY * 5;
 
     m_rigidbody->AddForce({0, -fb});
+    m_rigidbody->AddForce({0, m_rigidbody->velocity().y * -0.5f});
   } else {
     m_is_underwater = false;
   }
